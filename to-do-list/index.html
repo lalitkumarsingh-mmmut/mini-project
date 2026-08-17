@@ -1,44 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My To-Do List</title>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #9ca3af;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --danger: #ef4444;
+        }
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="modal"></div>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+        .todo-app {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-app h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f9fafb;
+            border-radius: 30px;
+            padding: 5px;
+        }
+
+        #task-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 12px 8px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Checkbox styles */
+        li::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            margin-right: 15px;
+            transition: all 0.2s;
+        }
+
+        li.checked {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        li.checked::before {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+            background-size: 14px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .delete-btn {
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 20px;
+            font-weight: bold;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            transition: color 0.2s;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="todo-app">
+        <h2>📝 To-Do List</h2>
+        
+        <div class="input-group">
+            <input type="text" id="task-input" placeholder="Add your task...">
+            <button onclick="addTask()">Add</button>
+        </div>
+
+        <ul id="list-container">
+            <!-- Tasks will be injected here via JavaScript -->
+        </ul>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById("task-input");
+        const listContainer = document.getElementById("list-container");
+
+        // Allow pressing 'Enter' to add a task
+        taskInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                addTask();
+            }
+        });
+
+        function addTask() {
+            if (taskInput.value.trim() === '') {
+                alert("You must write something!");
+            } else {
+                let li = document.createElement("li");
+                li.textContent = taskInput.value;
+                listContainer.appendChild(li);
+                
+                let span = document.createElement("span");
+                span.innerHTML = "&times;";
+                span.className = "delete-btn";
+                li.appendChild(span);
+            }
+            taskInput.value = "";
+            saveData();
+        }
+
+        // Handle checking off tasks and deleting them
+        listContainer.addEventListener("click", function(e) {
+            if (e.target.tagName === "LI") {
+                e.target.classList.toggle("checked");
+                saveData();
+            } else if (e.target.tagName === "SPAN") {
+                e.target.parentElement.remove();
+                saveData();
+            }
+        }, false);
+
+        // Save to browser's Local Storage
+        function saveData() {
+            localStorage.setItem("todoData", listContainer.innerHTML);
+        }
+
+        // Load data when page is opened
+        function showTask() {
+            listContainer.innerHTML = localStorage.getItem("todoData") || "";
+        }
+        
+        showTask();
+    </script>
+</body>
 </html>
